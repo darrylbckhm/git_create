@@ -13,7 +13,7 @@ class GitHubRepo:
     
     attr_list = {"1":"name", "2":"description", "3":"homepage", "4":"private", "5":"has_issues", "6":"has_wiki", "7":"team_id", "8":"auto_init", "9":"gitignore_template", "10":"license_template"}
 
-    attributes = {"name":None, "description":None, "homepage":None,"private":None,"has_issues":None,"has_wiki":None,"team_id":None,"auto_init":None, "gitignore_template":None,"license_template":None}
+    attributes = {"name":None, "description":None}
 
     def __init__(self, name, desc):
         self.attributes["name"] = name
@@ -27,7 +27,7 @@ class GitHubRepo:
         if prompt.lower() == "y" or prompt.lower() == "yes":
             user_input = menuPrompt()
             if user_input in self.attr_list:
-                self.attr_list[user_input] = input("Enter", self.attr_list[user_input])
+                self.attributes[attr_list[user_input]] = input("Enter", self.attr_list[user_input])
                 print("Updated", selfattr_list[user_input], "attribute.")
 
 def menuPrompt():
@@ -53,7 +53,9 @@ def getUserName():
 
 def connectRemote():
     global s
-    remote = socket.gethostbyname("www.github.com")
+    url = "https://api.github.com/user/repos"
+    #print(url)
+    remote = socket.gethostbyname(url)
     print("Attempting connection to", remote)
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -68,8 +70,7 @@ def createRepo(name, desc):
     connectRemote()
     user_name = getUserName()
     try:
-        s.send("POST /" + user_name + "/" + json.dumps(repo.getAttr()))
-        print(post)
+        s.send("POST " + json.dumps(repo.getAttr()))
         print("Repository sucessfully created.")
         s.close()
         #resp = s.recv(4096)
